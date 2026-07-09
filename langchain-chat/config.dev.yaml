@@ -1,0 +1,10 @@
+app:
+  environment: dev
+
+llm:
+  default_model: mock-local
+
+storage:
+  type: sqlite
+  sqlite:
+    path: data/dev/sqlite/app.db
