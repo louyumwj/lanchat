@@ -1,0 +1,13 @@
+app:
+  environment: test
+
+llm:
+  default_model: mock-local
+
+storage:
+  type: sqlite
+  sqlite:
+    path: data/test/sqlite/app.db
+
+exports:
+  root: data/test/users
