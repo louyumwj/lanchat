@@ -1,8 +1,0 @@
-app:
-  environment: prod
-
-llm:
-  default_model: ${MODEL_NAME}
-
-storage:
-  type: mysql
