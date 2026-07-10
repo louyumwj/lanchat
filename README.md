@@ -37,6 +37,34 @@
 cd C:\Users\17267\Documents\Codex\2026-07-09\files-mentioned-by-the-user-md\outputs\langchain-chat
 ```
 
+### 方式一：使用 Anaconda 环境
+
+创建名为 `lanchat` 的环境：
+
+```powershell
+conda env create -f environment.yml
+```
+
+激活环境：
+
+```powershell
+conda activate lanchat
+```
+
+初始化数据库和内置预设：
+
+```powershell
+python scripts/init_db.py
+```
+
+启动程序：
+
+```powershell
+python src/main.py
+```
+
+### 方式二：使用 uv
+
 安装依赖：
 
 ```powershell
@@ -104,16 +132,34 @@ $env:APP_ENV="prod"; uv run python scripts/smoke.py prod
 初始化数据库：
 
 ```powershell
+python scripts/init_db.py
+```
+
+或使用 uv：
+
+```powershell
 uv run python scripts/init_db.py
 ```
 
 运行 TUI：
 
 ```powershell
+python src/main.py
+```
+
+或使用 uv：
+
+```powershell
 uv run python src/main.py
 ```
 
 运行测试：
+
+```powershell
+python -m pytest -p no:cacheprovider
+```
+
+或使用 uv：
 
 ```powershell
 uv run pytest
