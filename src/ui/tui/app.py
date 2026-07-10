@@ -39,7 +39,7 @@ class TUIApp(AbstractUI):
             self.user_manager.current_user = (await self.user_manager.list_users())[0]
 
         while True:
-            choice = self.menu.main_menu(self.user_manager.current_user)
+            choice = await self.menu.main_menu(self.user_manager.current_user)
             if choice == "1":
                 await self.show_user_menu()
             elif choice == "2":
@@ -57,18 +57,18 @@ class TUIApp(AbstractUI):
                 console.print("请输入有效选项。")
 
     async def show_main_menu(self) -> None:
-        self.menu.main_menu(self.user_manager.current_user)
+        await self.menu.main_menu(self.user_manager.current_user)
 
     async def show_user_menu(self) -> None:
         while True:
-            choice = self.menu.user_menu()
+            choice = await self.menu.user_menu()
             if choice == "1":
-                await self.user_manager.create_user(prompt_text("用户名"))
+                await self.user_manager.create_user(await prompt_text("用户名"))
             elif choice == "2":
-                await self.user_manager.switch_user(prompt_text("用户名"))
+                await self.user_manager.switch_user(await prompt_text("用户名"))
             elif choice == "3":
-                username = prompt_text("要删除的用户名")
-                confirm = prompt_text("输入 YES 确认删除")
+                username = await prompt_text("要删除的用户名")
+                confirm = await prompt_text("输入 YES 确认删除")
                 if confirm == "YES":
                     await self.user_manager.delete_user(username)
             elif choice == "4":
@@ -79,7 +79,7 @@ class TUIApp(AbstractUI):
     async def show_session_menu(self) -> None:
         user = await self.require_user()
         while True:
-            choice = self.menu.session_menu()
+            choice = await self.menu.session_menu()
             if choice == "1":
                 self.menu.show_sessions(await self.session_manager.list_sessions(user.id))
             elif choice == "2":
@@ -88,13 +88,13 @@ class TUIApp(AbstractUI):
             elif choice == "3":
                 session = await self.pick_session(user.id)
                 if session:
-                    await self.session_manager.rename_session(session.id, prompt_text("新标题"))
+                    await self.session_manager.rename_session(session.id, await prompt_text("新标题"))
             elif choice == "4":
                 session = await self.pick_session(user.id)
-                if session and prompt_text("输入 YES 确认删除") == "YES":
+                if session and await prompt_text("输入 YES 确认删除") == "YES":
                     await self.session_manager.delete_session(session.id)
             elif choice == "5":
-                keyword = prompt_text("关键词")
+                keyword = await prompt_text("关键词")
                 results = await self.session_manager.search(user.id, keyword)
                 console.table(
                     "搜索结果",
@@ -112,28 +112,30 @@ class TUIApp(AbstractUI):
     async def show_preset_menu(self) -> None:
         user = await self.require_user()
         while True:
-            choice = self.menu.preset_menu()
+            choice = await self.menu.preset_menu()
             if choice == "1":
                 self.menu.show_presets(await self.preset_manager.list_presets(user.id))
             elif choice == "2":
                 await self.preset_manager.create_preset(
                     user.id,
-                    prompt_text("名称"),
-                    prompt_text("System Prompt"),
-                    prompt_text("说明"),
+                    await prompt_text("名称"),
+                    await prompt_text("System Prompt"),
+                    await prompt_text("说明"),
                 )
             elif choice == "3":
-                preset_id = prompt_text("预设 ID 前 8 位或完整 ID")
+                preset_id = await prompt_text("预设 ID 前 8 位或完整 ID")
                 preset = await self.resolve_preset(user.id, preset_id)
                 if preset:
                     await self.preset_manager.update_preset(
                         preset.id,
-                        name=prompt_text("新名称"),
-                        system_prompt=prompt_text("新 System Prompt"),
-                        description=prompt_text("新说明"),
+                        name=await prompt_text("新名称"),
+                        system_prompt=await prompt_text("新 System Prompt"),
+                        description=await prompt_text("新说明"),
                     )
             elif choice == "4":
-                preset = await self.resolve_preset(user.id, prompt_text("预设 ID 前 8 位或完整 ID"))
+                preset = await self.resolve_preset(
+                    user.id, await prompt_text("预设 ID 前 8 位或完整 ID")
+                )
                 if preset:
                     await self.preset_manager.delete_preset(preset.id)
             elif choice == "0":
@@ -148,7 +150,7 @@ class TUIApp(AbstractUI):
         user = await self.require_user()
         models = self.config_manager.available_models()
         console.print(f"可用模型：{', '.join(models)}")
-        model = prompt_text("新的默认模型")
+        model = await prompt_text("新的默认模型")
         if model:
             await self.user_manager.update_default_model(user, model)
 
@@ -156,7 +158,7 @@ class TUIApp(AbstractUI):
         user = await self.require_user()
         presets = await self.preset_manager.list_presets(user.id)
         self.menu.show_presets(presets)
-        preset_choice = prompt_text("预设 ID 前 8 位，或直接回车不使用")
+        preset_choice = await prompt_text("预设 ID 前 8 位，或直接回车不使用")
         preset = await self.resolve_preset(user.id, preset_choice) if preset_choice else None
         return await self.session_manager.create_session(
             user_id=user_id,
@@ -167,7 +169,7 @@ class TUIApp(AbstractUI):
     async def pick_session(self, user_id: str):
         sessions = await self.session_manager.list_sessions(user_id)
         self.menu.show_sessions(sessions)
-        prefix = prompt_text("会话 ID 前 8 位或完整 ID")
+        prefix = await prompt_text("会话 ID 前 8 位或完整 ID")
         return next((item for item in sessions if item.id.startswith(prefix)), None)
 
     async def resolve_preset(self, user_id: str, prefix: str):

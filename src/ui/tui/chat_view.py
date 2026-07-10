@@ -22,13 +22,13 @@ class ChatView:
         console.rule(f"对话：{session.title}")
         console.print("输入 /exit 返回，/model 切换模型，/export 导出当前会话。")
         while True:
-            user_input = prompt_text("你")
+            user_input = await prompt_text("你")
             if not user_input.strip():
                 continue
             if user_input == "/exit":
                 return
             if user_input == "/model":
-                model = prompt_text("模型名称")
+                model = await prompt_text("模型名称")
                 session = await self.session_manager.switch_model(session.id, model)
                 console.print(f"已切换到：{model}")
                 continue

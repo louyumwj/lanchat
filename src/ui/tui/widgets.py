@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Iterable
 
 try:
@@ -44,10 +45,11 @@ class TUIConsole:
 console = TUIConsole()
 
 
-def prompt_text(label: str) -> str:
+async def prompt_text(label: str) -> str:
     try:
-        from prompt_toolkit import prompt
+        from prompt_toolkit import PromptSession
 
-        return prompt(f"{label}: ")
+        session = PromptSession()
+        return await session.prompt_async(f"{label}: ")
     except ImportError:  # pragma: no cover
-        return input(f"{label}: ")
+        return await asyncio.to_thread(input, f"{label}: ")

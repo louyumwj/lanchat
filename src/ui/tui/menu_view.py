@@ -5,7 +5,7 @@ from ui.tui.widgets import console, prompt_text
 
 
 class MenuView:
-    def main_menu(self, current_user: User | None) -> str:
+    async def main_menu(self, current_user: User | None) -> str:
         console.rule("LangChain Chat")
         user_label = current_user.username if current_user else "未选择"
         console.print(f"当前用户：{user_label}")
@@ -15,18 +15,18 @@ class MenuView:
         console.print("4. 开始对话")
         console.print("5. 设置")
         console.print("0. 退出")
-        return prompt_text("请选择")
+        return await prompt_text("请选择")
 
-    def user_menu(self) -> str:
+    async def user_menu(self) -> str:
         console.rule("用户管理")
         console.print("1. 创建用户")
         console.print("2. 切换用户")
         console.print("3. 删除用户")
         console.print("4. 查看用户")
         console.print("0. 返回")
-        return prompt_text("请选择")
+        return await prompt_text("请选择")
 
-    def session_menu(self) -> str:
+    async def session_menu(self) -> str:
         console.rule("会话管理")
         console.print("1. 查看会话")
         console.print("2. 新建会话")
@@ -35,16 +35,16 @@ class MenuView:
         console.print("5. 搜索消息")
         console.print("6. 导出会话")
         console.print("0. 返回")
-        return prompt_text("请选择")
+        return await prompt_text("请选择")
 
-    def preset_menu(self) -> str:
+    async def preset_menu(self) -> str:
         console.rule("预设管理")
         console.print("1. 查看预设")
         console.print("2. 新增个人预设")
         console.print("3. 编辑个人预设")
         console.print("4. 删除个人预设")
         console.print("0. 返回")
-        return prompt_text("请选择")
+        return await prompt_text("请选择")
 
     def show_users(self, users: list[User]) -> None:
         console.table(
